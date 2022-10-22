@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32922.545
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VAT_Checker", "VAT_Checker\VAT_Checker.csproj", "{CA9CB538-A94F-4926-96D8-E6EA5CF068AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CA9CB538-A94F-4926-96D8-E6EA5CF068AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA9CB538-A94F-4926-96D8-E6EA5CF068AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA9CB538-A94F-4926-96D8-E6EA5CF068AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA9CB538-A94F-4926-96D8-E6EA5CF068AF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {28BE8921-5384-46B9-80E2-C13F82EA69E2}
+	EndGlobalSection
+EndGlobal
