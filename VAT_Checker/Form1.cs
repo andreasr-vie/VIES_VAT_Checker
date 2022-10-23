@@ -20,6 +20,8 @@ namespace VAT_Checker
         public string NameFirma { get; set; }
         public string AdresseFirma { get; set; }
         public string Gueltigkeit { get; set; }
+        public string strExeFilePath { get; set; }
+        public string strWorkPath { get; set; }
 
 
         public Form1()
@@ -29,12 +31,18 @@ namespace VAT_Checker
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            this.AutoSize = true;
+            this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+
             label2.ForeColor = Color.Gray;
             label3.ForeColor = Color.Gray;
             label4.ForeColor = Color.Gray;
             label2.Text = "GÜLTIGKEIT";
             label3.Text = "Firmenname";
             label4.Text = "Adresse";
+
+            strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            strWorkPath = System.IO.Path.GetDirectoryName(strExeFilePath);
 
         }
 
@@ -88,7 +96,7 @@ namespace VAT_Checker
 
         private void button2_Click(object sender, EventArgs e)
         {
-            string pfad = @"C:\Users\andreasresch\Desktop\VATcheck.txt";
+            string pfad = strWorkPath + @"\VATcheck.txt";
             bool fileExists = File.Exists(pfad);
             string datum = DateTime.Now.ToString("yyyy-MM-dd");
             string uhrzeit = DateTime.Now.ToString("HH:mm");
