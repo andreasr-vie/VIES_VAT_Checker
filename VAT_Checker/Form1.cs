@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VAT_Checker.Service.VIES;
@@ -37,6 +38,8 @@ namespace VAT_Checker
         private void button1_Click(object sender, EventArgs e)
         {
             string VAT = tbVATNr.Text;
+            VAT = Regex.Replace(VAT, " ", "");
+            tbVATNr.Text = VAT;
             int anzZeichen = VAT.Length;
             int zeichenOhneLand = anzZeichen - 2;
 
