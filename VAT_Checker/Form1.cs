@@ -20,9 +20,9 @@ namespace VAT_Checker
         public string NameFirma { get; set; }
         public string AdresseFirma { get; set; }
         public string Gueltigkeit { get; set; }
-        public string strExeFilePath { get; set; }
-        public string strWorkPath { get; set; }
-
+        public string StrExeFilePath { get; set; }
+        public string StrWorkPath { get; set; }
+        public bool AbfrageErfolgreich { get; set; }
 
         public Form1()
         {
@@ -41,77 +41,125 @@ namespace VAT_Checker
             label3.Text = "Firmenname";
             label4.Text = "Adresse";
 
-            strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            strWorkPath = System.IO.Path.GetDirectoryName(strExeFilePath);
+            StrExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            StrWorkPath = System.IO.Path.GetDirectoryName(StrExeFilePath);
 
-        }
-
-        private void bindingSource1_CurrentChanged(object sender, EventArgs e)
-        {
-
+            AbfrageErfolgreich = false;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string VAT = tbVATNr.Text;
-            VAT = Regex.Replace(VAT, " ", "");
-            tbVATNr.Text = VAT;
-            int anzZeichen = VAT.Length;
-            int zeichenOhneLand = anzZeichen - 2;
-
-            string Land = VAT.Remove(2, zeichenOhneLand);
-            string VATNr = VAT.Substring(2);
-            VATNumber = VATNr;
-
-            checkVatPortTypeClient viesVATchecker = new checkVatPortTypeClient();
-            viesVATchecker.checkVat(ref Land, ref VATNr, out bool valide, out string Name, out string Adresse);
-
-            VATLand = Land;
-            
-            if (valide == true)
+            try
             {
-                label2.ForeColor = Color.Black;
-                label2.BackColor = Color.LimeGreen;
-                label2.Text = "GÜLTIG";
-                Gueltigkeit = "GUELTIG";
-            }
-            else
+                string VAT = tbVATNr.Text;
+                VAT = Regex.Replace(VAT, " ", "");
+                if (CheckVATregex(VAT))
+                {
+                    tbVATNr.Text = VAT;
+                    int anzZeichen = VAT.Length;
+                    int zeichenOhneLand = anzZeichen - 2;
+
+                    string Land = VAT.Remove(2, zeichenOhneLand);
+                    string VATNr = VAT.Substring(2);
+                    VATNumber = VATNr;
+
+                    checkVatPortTypeClient viesVATchecker = new checkVatPortTypeClient();
+                    viesVATchecker.checkVat(ref Land, ref VATNr, out bool valide, out string Name, out string Adresse);
+
+                    VATLand = Land;
+
+                    if (valide == true)
+                    {
+                        label2.ForeColor = Color.Black;
+                        label2.BackColor = Color.LimeGreen;
+                        label2.Text = "GÜLTIG";
+                        Gueltigkeit = "GUELTIG";
+                    }
+                    else
+                    {
+                        label2.ForeColor = Color.Black;
+                        label2.BackColor = Color.Red;
+                        label2.Text = "UNGÜLTIG";
+                        Gueltigkeit = "UNGUELTIG";
+                    }
+
+                    label3.ForeColor = Color.Black;
+                    NameFirma = (ReplaceNewLine(Name, ", "));
+                    label3.Text = NameFirma;
+
+                    label4.ForeColor = Color.Black;
+                    AdresseFirma = (ReplaceNewLine(Adresse, ", "));
+                    AdresseFirma = AdresseFirma.Replace(@"//", @"/");
+                    label4.Text = AdresseFirma;
+
+                    AbfrageErfolgreich = true;
+                }
+                else
+                {
+                    label2.ForeColor = Color.Red;
+                    label2.BackColor = DefaultBackColor;
+                    label2.Text = "VAT-Nummernschema nicht gültig!";
+                    label3.Text = "";
+                    label4.Text = "";
+                    tbVATNr.Text = "";
+
+                    AbfrageErfolgreich = false;
+                }
+            } catch (Exception ex)
             {
-                label2.ForeColor = Color.Black; 
-                label2.BackColor = Color.Red;
-                label2.Text = "UNGÜLTIG";
-                Gueltigkeit = "UNGUELTIG";
+                MessageBox.Show("Fehler: " + ex, "FEHLER");
+                label2.ForeColor = Color.Red;
+                label2.BackColor = DefaultBackColor;
+                label2.Text = "Fehler!";
+                label3.Text = "";
+                label4.Text = "";
+                tbVATNr.Text = "";
+
+                AbfrageErfolgreich = false;
             }
-
-            label3.ForeColor = Color.Black;
-            NameFirma = (ReplaceNewLine(Name, ", "));
-            label3.Text = NameFirma;
-
-            label4.ForeColor = Color.Black;
-            AdresseFirma = (ReplaceNewLine(Adresse, ", "));
-            AdresseFirma = AdresseFirma.Replace(@"//", @"/");
-            label4.Text = AdresseFirma;
-
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            string pfad = strWorkPath + @"\VATcheck.txt";
-            bool fileExists = File.Exists(pfad);
-            string datum = DateTime.Now.ToString("yyyy-MM-dd");
-            string uhrzeit = DateTime.Now.ToString("HH:mm");
-
-            if (!fileExists)
+            try
             {
-                string headerFile = "Datum;Uhrzeit;UID;Gueltigkeit;Name;Adresse" + Environment.NewLine;
-                File.WriteAllText(pfad, headerFile);
-            }
+                string pfad = StrWorkPath + @"\VATcheck.txt";
+                bool fileExists = File.Exists(pfad);
+                string datum = DateTime.Now.ToString("yyyy-MM-dd");
+                string uhrzeit = DateTime.Now.ToString("HH:mm");
 
-            using (StreamWriter w = File.AppendText(pfad))
+                if (!fileExists)
+                {
+                    string headerFile = "Datum;Uhrzeit;UID;Gueltigkeit;Name;Adresse" + Environment.NewLine;
+                    File.WriteAllText(pfad, headerFile);
+                }
+
+                if (AbfrageErfolgreich)
+                {
+                    using (StreamWriter w = File.AppendText(pfad))
+                    {
+                        w.WriteLine(datum + ";" + uhrzeit + ";" + VATLand + VATNumber + ";" + Gueltigkeit + ";" + NameFirma + ";" + AdresseFirma);
+                    }
+                }
+                else
+                {
+                    label2.ForeColor = Color.Red;
+                    label2.BackColor = DefaultBackColor;
+                    label2.Text = "Fehler beim Protokollieren!";
+                    label3.Text = "";
+                    label4.Text = "";
+                    tbVATNr.Text = "";
+                }
+            } catch (Exception ex)
             {
-                w.WriteLine(datum + ";" + uhrzeit + ";" + VATLand + VATNumber + ";" + Gueltigkeit + ";" + NameFirma + ";" + AdresseFirma);
+                MessageBox.Show("Fehler: " + ex, "FEHLER");
+                label2.ForeColor = Color.Red;
+                label2.BackColor = DefaultBackColor;
+                label2.Text = "Fehler!";
+                label3.Text = "";
+                label4.Text = "";
+                tbVATNr.Text = "";
             }
-
         }
 
         public static string ReplaceNewLine(string input, string replace)
@@ -122,9 +170,9 @@ namespace VAT_Checker
             return input;
         }
 
-        private void label1_Click(object sender, EventArgs e)
+        public static bool CheckVATregex(string input)
         {
-
+            return Regex.Match(input, @"[a-zA-Z]{2,4}[0-9]{2,12}[a-zA-Z]{0,2}$").Success;
         }
     }
 }
