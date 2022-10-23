@@ -123,7 +123,7 @@ namespace VAT_Checker
         {
             try
             {
-                string pfad = StrWorkPath + @"\VATcheck.txt";
+                string pfad = StrWorkPath + @"\VAT-Protokoll.csv";
                 bool fileExists = File.Exists(pfad);
                 string datum = DateTime.Now.ToString("yyyy-MM-dd");
                 string uhrzeit = DateTime.Now.ToString("HH:mm");
