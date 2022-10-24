@@ -174,5 +174,10 @@ namespace VAT_Checker
         {
             return Regex.Match(input, @"[a-zA-Z]{2,4}[0-9]{2,12}[a-zA-Z]{0,2}$").Success;
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(StrWorkPath + @"\VAT-Protokoll.csv");
+        }
     }
 }
